@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"]
+}
