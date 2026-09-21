@@ -16,7 +16,8 @@ export function move(
   // Un JSON válido puede tener una estructura incorrecta para nuestro juego.
   if (!isState(state)) {
     return res.status(400).json({
-      error: 'Estado inválido: se requiere jugador A o B, dado de 1 a 3 y tablero de 10x10 con "", "N" o piezas como A1/B1.',
+      error:
+        'Estado inválido: se requiere jugador A o B, dado de 1 a 3 y tablero de 10x10 con "", "N" o piezas como A1/B1.',
     });
   }
 
