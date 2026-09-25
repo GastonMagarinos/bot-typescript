@@ -1,10 +1,10 @@
-import type { Movement, State, PieceId, Direction } from "./types.js";
+import type { PieceId, Direction,Movement, State,  } from "./types.js";
 //tamano del tablero
 const size = 10;
 //creamos un tipo para agrupar las filas y cpolumnas en un objeto
 type Position = { row: number; col: number };
 
-//recoorido del tablero para encontrar la pieza con su ubicacion
+//recorrido del tablero para encontrar la pieza con su ubicacion
 function findPieces(state: State): Map<PieceId, Position> {
   const pieces = new Map<PieceId, Position>();
   for (let row = 0; row < size; row++) {
@@ -50,28 +50,33 @@ function direction(a: Position, b: Position): Direction {
 //funcion que exportamos la mejor jugada de cada pieza
 export function chooseMove(state: State): Movement {
   const movements: Movement = {};
-  const houses = findHouses(state);
-
-  for (const [pieceId, positionPiece] of findPieces(state)) {
-    const votes: Partial<Record<Direction, number>> = {};
-    let bestDirection: Direction|undefined ;
+  const house = findHouses(state);
+  const pieces = findPieces(state)
+  const votes: Partial<Record<Direction, number>> = {};
+  let bestDirection: Direction|undefined ;
+  let lastBestDirection:Direction|undefined;
+  for (const [pieceId, positionPiece] of pieces) {
     let bestScore = 0;
+    for (const h of house) {
+      const dir = direction(positionPiece, h);
 
-    for (const house of houses) {
-      const dir = direction(positionPiece, house);
-
-      const score = (votes[dir] ?? 0) + 1 / distance(positionPiece, house);
+      const score = (votes[dir] ?? 0) + 1 / distance(positionPiece, h);
       votes[dir] = score;
 
       if (score > bestScore) {
         bestScore = score;
+        lastBestDirection = bestDirection;
         bestDirection = dir;
       }
     }
 
-    if (bestDirection) movements[pieceId] = bestDirection;//movements{A1:"S"}
+    if (bestDirection) Object.assign(movements, { [pieceId]: bestDirection });//movements{A1:"S"}
   }
+  for (const [pieceId, piecePosition] of pieces) {
+    for (const h of house) {
 
+    }
+}
   return movements;
 }
 
@@ -83,15 +88,15 @@ const state: State = {
   jugador: "A",
   dado: 3,
   tablero: [
-    ["", "", "", "", "N", "", "N", "", "", ""],
-    ["", "", "", "N", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "A1", "", "", "N", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "N", "N", "", "", "", ""],
+    ["", "", "", "", "", "A1", "", "", "", ""],
+    ["", "", "", "", "", "N", "", "", "", ""],
+    ["", "", "", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "N", "", "", "B1", ""],
     ["", "", "", "", "", "", "", "", "", ""],
   ],
 };
