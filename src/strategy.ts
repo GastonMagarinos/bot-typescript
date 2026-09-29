@@ -106,13 +106,13 @@ export function chooseMove(state: State):Movement {
     if (positionPiece !== undefined) {
       for (const [clave, valor] of pieces) {
           if (clave === pieceId || valor === undefined) continue;
-          if (samePosition (bestDirection,dado,positionPiece, valor)) crashWithTeamMate = true;
+          if (samePosition(bestDirection,dado,positionPiece, valor)) crashWithTeamMate = true;
         }
 
-        for (const [, valor] of findEnemy(state, "B")) {
-          if (samePosition (bestDirection,dado,positionPiece, valor)) crashWithEnemies = true;
-
+      for (const [, valor] of findEnemy(state, "B")) {
+        if (samePosition(bestDirection, dado, positionPiece, valor)) crashWithEnemies = true;
       }
+    }
 
     if (crashWithTeamMate || crashWithEnemies) {
       movements[pieceId] = lastBestDirection;
