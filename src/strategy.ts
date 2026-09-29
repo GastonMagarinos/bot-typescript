@@ -30,6 +30,8 @@ function findHouses(state: State): Position[] {
   }
   return houses;
 }
+const samePosition = (a: Position, b: Position) => a.row === b.row && a.col === b.col;
+
 // funcion para que el tablero sea toroidal, si toroide es mayor a 5 o -5 la mitad del tablero, busca los extremos sino va por dentro
 const toroidal = (toroide: number) =>toroide > size / 2  ? toroide - size: toroide < -size / 2? toroide + size: toroide;
 
@@ -53,12 +55,20 @@ export function chooseMove(state: State): Movement {
   const house = findHouses(state);
   const pieces = findPieces(state)
   const votes: Partial<Record<Direction, number>> = {};
+  const piece: Partial<Record<PieceId, Position>> = {};
   let bestDirection: Direction|undefined ;
   let lastBestDirection:Direction|undefined;
+  let bestScore = 0;
+
+
   for (const [pieceId, positionPiece] of pieces) {
-    let bestScore = 0;
+    const myPosition = piece[pieceId];
+    const myTeamMate = pieceId[0]
+    let crashwithTeamMate = false
+    let crashwithEnemies = false
     for (const h of house) {
       const dir = direction(positionPiece, h);
+
 
       const score = (votes[dir] ?? 0) + 1 / distance(positionPiece, h);
       votes[dir] = score;
@@ -67,18 +77,29 @@ export function chooseMove(state: State): Movement {
         bestScore = score;
         lastBestDirection = bestDirection;
         bestDirection = dir;
+        piece[pieceId] = h
       }
     }
 
-    if (bestDirection) Object.assign(movements, { [pieceId]: bestDirection });//movements{A1:"S"}
-  }
-  for (const [pieceId, piecePosition] of pieces) {
-    for (const h of house) {
-
+    if (myPosition !== undefined) {
+      for (const [clave, valor] of Object.entries(piece)) {
+        if (clave === pieceId || valor === undefined) continue;
+        if (!samePosition(myPosition, valor)) continue;
+        if (clave[0] === myTeamMate) crashwithTeamMate = true
+          else crashwithEnemies = true
+      }
     }
-}
+    if (crashwithTeamMate || crashwithEnemies) {
+      movements[pieceId] = lastBestDirection;
+    }
+    else {
+      movements[pieceId] = bestDirection;
+    }
+  }
+
   return movements;
-}
+};
+
 
 
 
@@ -86,7 +107,7 @@ export function chooseMove(state: State): Movement {
 //prueba al inicializar, muestra en consola el mensaje de chooseMove
 const state: State = {
   jugador: "A",
-  dado: 3,
+  dado: 1,
   tablero: [
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
@@ -94,9 +115,9 @@ const state: State = {
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "A1", "", "", "", ""],
+    ["", "", "", "", "", "B1", "A2", "", "", ""],
     ["", "", "", "", "", "N", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "N", "", "", "B1", ""],
+    ["", "", "", "", "", "N", "", "", "B2", ""],
     ["", "", "", "", "", "", "", "", "", ""],
   ],
 };
