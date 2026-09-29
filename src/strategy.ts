@@ -1,4 +1,4 @@
-import type { PieceId, Direction,Movement, State,  } from "./types.js";
+import type { PieceId, Direction,Movement, State,DieValue  } from "./types.js";
 //tamano del tablero
 const size = 10;
 //creamos un tipo para agrupar las filas y cpolumnas en un objeto
@@ -11,6 +11,18 @@ function findPieces(state: State): Map<PieceId, Position> {
     for (let col = 0; col < size; col++) {
       const cell = state.tablero[row][col];
       if (cell !== "" && cell !== "N" && cell.startsWith(state.jugador)) {
+        pieces.set(cell, { row, col });
+      }
+    }
+  }
+  return pieces;
+}
+function findEnemy(state: State, player: string): Map<PieceId, Position> {
+  const pieces = new Map<PieceId, Position>();
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      const cell = state.tablero[row][col];
+      if (cell !== "" && cell !== "N" && cell.startsWith(player)) {
         pieces.set(cell, { row, col });
       }
     }
@@ -30,7 +42,18 @@ function findHouses(state: State): Position[] {
   }
   return houses;
 }
-const samePosition = (a: Position, b: Position) => a.row === b.row && a.col === b.col;
+
+const samePosition = (dir:Direction|undefined,die: DieValue, a: Position, b: Position) => {
+   let rowP =a.row
+  let rowE = b.row
+  let colP = a.col
+  let colE =b.col
+  if (dir === "S") rowP += die;
+    else if (dir === "N") rowP -= die;
+    else if (dir === "E") colP += die;
+    else if (dir === "O") colP -= die;
+return rowP === rowE && colP===colE
+}
 
 // funcion para que el tablero sea toroidal, si toroide es mayor a 5 o -5 la mitad del tablero, busca los extremos sino va por dentro
 const toroidal = (toroide: number) =>toroide > size / 2  ? toroide - size: toroide < -size / 2? toroide + size: toroide;
@@ -50,22 +73,21 @@ function direction(a: Position, b: Position): Direction {
   }
 }
 //funcion que exportamos la mejor jugada de cada pieza
-export function chooseMove(state: State): Movement {
+export function chooseMove(state: State):Movement {
   const movements: Movement = {};
   const house = findHouses(state);
   const pieces = findPieces(state)
+  const dado = state.dado;
+  let e;
   const votes: Partial<Record<Direction, number>> = {};
-  const piece: Partial<Record<PieceId, Position>> = {};
   let bestDirection: Direction|undefined ;
   let lastBestDirection:Direction|undefined;
   let bestScore = 0;
 
 
   for (const [pieceId, positionPiece] of pieces) {
-    const myPosition = piece[pieceId];
-    const myTeamMate = pieceId[0]
-    let crashwithTeamMate = false
-    let crashwithEnemies = false
+    let crashWithTeamMate = false
+    let crashWithEnemies = false
     for (const h of house) {
       const dir = direction(positionPiece, h);
 
@@ -75,21 +97,24 @@ export function chooseMove(state: State): Movement {
 
       if (score > bestScore) {
         bestScore = score;
-        lastBestDirection = bestDirection;
+        lastBestDirection = bestDirection??"E";
         bestDirection = dir;
-        piece[pieceId] = h
       }
     }
 
-    if (myPosition !== undefined) {
-      for (const [clave, valor] of Object.entries(piece)) {
-        if (clave === pieceId || valor === undefined) continue;
-        if (!samePosition(myPosition, valor)) continue;
-        if (clave[0] === myTeamMate) crashwithTeamMate = true
-          else crashwithEnemies = true
+
+    if (positionPiece !== undefined) {
+      for (const [clave, valor] of pieces) {
+          if (clave === pieceId || valor === undefined) continue;
+          if (samePosition (bestDirection,dado,positionPiece, valor)) crashWithTeamMate = true;
+        }
+
+        for (const [, valor] of findEnemy(state, "B")) {
+          if (samePosition (bestDirection,dado,positionPiece, valor)) crashWithEnemies = true;
+
       }
-    }
-    if (crashwithTeamMate || crashwithEnemies) {
+
+    if (crashWithTeamMate || crashWithEnemies) {
       movements[pieceId] = lastBestDirection;
     }
     else {
@@ -109,15 +134,15 @@ const state: State = {
   jugador: "A",
   dado: 1,
   tablero: [
+    ["A1", "", "", "", "", "", "", "", "", ""],
+    ["A2", "", "", "", "", "", "", "", "", ""],
+    ["N", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "A1", "", "", "", ""],
-    ["", "", "", "", "", "B1", "A2", "", "", ""],
     ["", "", "", "", "", "N", "", "", "", ""],
-    ["", "", "", "", "", "N", "", "", "B2", ""],
     ["", "", "", "", "", "", "", "", "", ""],
   ],
 };
