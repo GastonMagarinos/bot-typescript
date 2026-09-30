@@ -48,10 +48,10 @@ const samePosition = (dir:Direction|undefined,die: DieValue, a: Position, b: Pos
   let rowE = b.row
   let colP = a.col
   let colE =b.col
-  if (dir === "S") rowP += die;
-    else if (dir === "N") rowP -= die;
-    else if (dir === "E") colP += die;
-    else if (dir === "O") colP -= die;
+  if (dir === "S") rowP = (rowP + die) % 10;
+    else if (dir === "N") rowP = (rowP - die +  10) % 10;
+    else if (dir === "E") colP = (colP + die) % 10;
+    else if (dir === "O") colP = (colP - die + 10) % 10;
 return rowP === rowE && colP===colE
 }
 
@@ -77,8 +77,8 @@ export function chooseMove(state: State):Movement {
   const movements: Movement = {};
   const house = findHouses(state);
   const pieces = findPieces(state)
+  const enemies =findEnemy(state,state.jugador === "A" ? "B" : "A")
   const dado = state.dado;
-  let e;
   const votes: Partial<Record<Direction, number>> = {};
   let bestDirection: Direction|undefined ;
   let lastBestDirection:Direction|undefined;
@@ -109,7 +109,7 @@ export function chooseMove(state: State):Movement {
           if (samePosition(bestDirection,dado,positionPiece, valor)) crashWithTeamMate = true;
         }
 
-      for (const [, valor] of findEnemy(state, "B")) {
+      for (const [, valor] of enemies) {
         if (samePosition(bestDirection, dado, positionPiece, valor)) crashWithEnemies = true;
       }
     }
@@ -135,15 +135,15 @@ const state: State = {
   dado: 1,
   tablero: [
     ["A1", "", "", "", "", "", "", "", "", ""],
-    ["A2", "", "", "", "", "", "", "", "", ""],
-    ["N", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "N", "", "", "", ""],
     ["", "", "", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", "", "", ""],
+    ["N", "", "", "", "", "N", "", "", "", ""],
+    ["B2", "", "", "", "", "", "", "", "", ""],
   ],
 };
 console.log(chooseMove(state));
