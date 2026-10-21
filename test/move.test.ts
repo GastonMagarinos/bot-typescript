@@ -122,8 +122,8 @@ test("GET /profile devuelve exactamente el perfil público del bot", async () =>
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toMatch(/^application\/json\b/);
     expect(await response.json()).toEqual({
-      name: "Bot Xeneize",
-      colors: ["#003B73", "#FFCC00", "#003B73"],
+      name: "Team Ferrari",
+      colors: ["#FF2800", "#FFDC39"],
     });
   } finally {
     await new Promise<void>((resolve, reject) => server.close(err => err ? reject(err) : resolve()));
