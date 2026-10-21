@@ -14,8 +14,8 @@ test("elige piezas propias, se acerca a casas neutrales y no modifica el estado"
   assert.ok(isState(fixture));
   // Una copia profunda permite detectar si la estrategia modifica el tablero original.
   const original = structuredClone(fixture);
-  expect(chooseMove(fixture)).toEqual({ A1: "E" });
-  expect(chooseMove({ ...fixture, jugador: "B" })).toEqual({ B2: "N" });
+  expect(chooseMove(fixture)).toEqual({ A1: "N" });
+  expect(chooseMove({ ...fixture, jugador: "B" })).toEqual({ B2: "S" });
   expect(fixture).toEqual(original);
   // Sin piezas, la respuesta debe ser un diccionario vacío.
   const empty = structuredClone(fixture);
@@ -33,8 +33,8 @@ test.each(["A", "B"] as const)("mueve todas las fichas de %s sin modificar el es
   state.tablero[9][9] = "B4";
   const original = structuredClone(state);
   expect(chooseMove(state)).toEqual(jugador === "A"
-    ? { A1: "E", A2: "O", A3: "N" }
-    : { B2: "N", B3: "N", B4: "N" });
+    ? { A1: "N", A2: "N", A3: "O" }
+    : { B2: "S", B3: "S", B4: "S" });
   expect(state).toEqual(original);
 });
 
@@ -73,7 +73,7 @@ test("POST /move valida el estado y devuelve un diccionario", async () => {
     for (const jugador of ["A", "B"]) {
       const response = await post(JSON.stringify({ ...fixture, jugador }));
       expect(response.status).toBe(200);
-      expect(await response.json()).toEqual(jugador === "A" ? { A1: "E" } : { B2: "N" });
+      expect(await response.json()).toEqual(jugador === "A" ? { A1: "N" } : { B2: "S" });
     }
     // El endpoint también debe devolver todas las fichas de cada jugador.
     const multiple = structuredClone(fixture);
@@ -84,8 +84,8 @@ test("POST /move valida el estado y devuelve un diccionario", async () => {
       const response = await post(JSON.stringify({ ...multiple, jugador }));
       expect(response.status).toBe(200);
       expect(await response.json()).toEqual(jugador === "A"
-        ? { A1: "E", A2: "O", A3: "N" }
-        : { B2: "N", B3: "N" });
+        ? { A1: "N", A2: "N", A3: "O" }
+        : { B2: "S", B3: "S" });
     }
     // Los tres resultados posibles del dado deben ser aceptados.
     for (const dado of [1, 2, 3]) {

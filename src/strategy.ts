@@ -124,26 +124,3 @@ export function chooseMove(state: State):Movement {
 
   return movements;
 };
-
-
-
-
-
-//prueba al inicializar, muestra en consola el mensaje de chooseMove
-const state: State = {
-  jugador: "A",
-  dado: 1,
-  tablero: [
-    ["A1", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", "", "", ""],
-    ["N", "", "", "", "", "N", "", "", "", ""],
-    ["B2", "", "", "", "", "", "", "", "", ""],
-  ],
-};
-console.log(chooseMove(state));
