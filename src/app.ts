@@ -12,7 +12,7 @@ app.use(express.json());
 app.get("/profile", (req, res) => {
   return res.status(200).json({
     name: "Team Ferrari",
-    colors: ["#FF2800", "#FFDC39"],
+    colors: ["#FF2800", "#FFDC39","#FF2800"],
   });
 });
 
