@@ -7,16 +7,18 @@ export const app = express();
 // Este middleware interpreta los cuerpos con Content-Type: application/json.
 // Debe registrarse antes del endpoint para que req.body esté disponible.
 app.use(express.json());
+
+// Perfil público del bot. No requiere body ni autenticación.
+app.get("/profile", (req, res) => {
+  return res.status(200).json({
+    name: "Bot Boca",
+    colors: ["#003B73", "#FFCC00", "#003B73"],
+  });
+});
+
 // El motor solicita una decisión enviando el estado mediante POST /move.
 app.post("/move", move);
 
-//personalizacion bot
-app.get("/profile", (req, res) => {
-  return res.status(200).json({
-    name: "Bot Team Ferrari",
-    image: "https://i.pinimg.com/736x/d6/c4/0d/d6c40d4feb7ab75b4483521fef0bf3bd.jpg",
-  });
-});
 // Express reconoce los manejadores de errores por sus cuatro parámetros,
 // aunque este manejador no necesite usar req ni next.
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

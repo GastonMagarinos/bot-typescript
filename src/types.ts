@@ -31,3 +31,4 @@ export interface State {
 // Diccionario de IDs de piezas a direcciones, por ejemplo { A1: "N" }.
 // Partial permite incluir solo las piezas elegidas o devolver un objeto vacío.
 export type Movement = Partial<Record<PieceId, Direction>>;
+
