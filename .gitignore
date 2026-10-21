@@ -2,3 +2,5 @@ node_modules/
 src/strategy2.ts
 .DS_Store
 dist/
+.vercel
+.env*
