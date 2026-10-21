@@ -17,8 +17,6 @@ app.get("/profile", (req, res) => {
     image: "https://i.pinimg.com/736x/d6/c4/0d/d6c40d4feb7ab75b4483521fef0bf3bd.jpg",
   });
 });
-//
-// dfvbrbe
 // Express reconoce los manejadores de errores por sus cuatro parámetros,
 // aunque este manejador no necesite usar req ni next.
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
