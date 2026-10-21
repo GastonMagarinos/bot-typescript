@@ -126,3 +126,5 @@ en este caso ponemos a jugar el mismo bot de los dos lados y las metricas dentro
 
 Creamos un testeo manual para ir probando las jugadas y como se comportaba las piezas si se encontraban en la situacion de pisarse, ahora con lo que vimos en la ultima clase sobre los testeos podremos ir probando las jugadas y ver como se comporta el bot en situaciones reales.Disponibles en la version 2.0
 Prueba de preview
+Prueba de preview
+Prueba de preview
