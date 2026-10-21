@@ -2,9 +2,9 @@ name: CI y despliegue en Vercel
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main]
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 # Impide que dos despliegues de la misma rama compitan.
@@ -18,7 +18,7 @@ permissions:
 jobs:
   deploy:
     # Un dispatch manual solo puede desplegar si se eligió master.
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
